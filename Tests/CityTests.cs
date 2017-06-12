@@ -25,9 +25,29 @@ namespace AirlinePlanner
       Assert.Equal(controlList, testList);
     }
 
+    [Fact]
+    public void City_Equals_TrueForIdenticalObjects()
+    {
+      City firstCity = new City("Cleveland");
+      City secondCity = new City("Cleveland");
+
+      Assert.Equal(firstCity, secondCity);
+    }
+
+    [Fact]
+    public void City_Save_SavesCityToDatabase()
+    {
+      City newCity = new City("Chicago");
+      newCity.Save();
+
+      City savedCity = City.GetAll()[0];
+
+      Assert.Equal(newCity, savedCity);
+    }
+
     public void Dispose()
     {
-
+      City.DeleteAll();
     }
   }
 }

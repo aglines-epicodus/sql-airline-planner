@@ -62,5 +62,60 @@ namespace AirlinePlanner.Objects
 
       return cities;
     }
+
+    public override bool Equals(System.Object otherCity)
+    {
+      if (!(otherCity is City))
+      {
+        return false;
+      }
+      else
+      {
+        City newCity = (City) otherCity;
+        bool nameEquality = this.GetName() == newCity.GetName();
+        bool idEquality = this.GetId() == newCity.GetId();
+        return (nameEquality && idEquality);
+      }
+    }
+
+    public void Save()
+    {
+      SqlConnection conn = DB.Connection();
+      conn.Open();
+
+      SqlCommand cmd = new SqlCommand("INSERT INTO cities (name) OUTPUT INSERTED.id VALUES (@CityName);", conn);
+
+      SqlParameter nameParam = new SqlParameter("@CityName", this.GetName());
+      cmd.Parameters.Add(nameParam);
+      SqlDataReader rdr = cmd.ExecuteReader();
+
+      while(rdr.Read())
+      {
+        this._id = rdr.GetInt32(0);
+      }
+
+      if(rdr != null)
+      {
+        rdr.Close();
+      }
+      if(conn != null)
+      {
+        conn.Close();
+      }
+    }
+
+    public static void DeleteAll()
+    {
+      SqlConnection conn = DB.Connection();
+      conn.Open();
+
+      SqlCommand cmd = new SqlCommand("DELETE FROM cities", conn);
+      cmd.ExecuteNonQuery();
+
+      if(conn != null)
+      {
+        conn.Close();
+      }
+    }
   }
 }
