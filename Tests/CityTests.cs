@@ -45,6 +45,17 @@ namespace AirlinePlanner
       Assert.Equal(newCity, savedCity);
     }
 
+    [Fact]
+    public void City_Find_FindsCityInDatabase()
+    {
+      City newCity = new City("Portland");
+      newCity.Save();
+
+      City foundCity = City.Find(newCity.GetId());
+
+      Assert.Equal(newCity, foundCity);
+    }
+
     public void Dispose()
     {
       City.DeleteAll();
