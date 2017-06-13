@@ -228,5 +228,38 @@ namespace AirlinePlanner.Objects
       }
       return flightPlans;
     }
+
+
+    public List<Flight> GetAllDelayedFlights()
+    {
+      SqlConnection conn = DB.Connection();
+      conn.Open();
+
+      SqlCommand cmd = new SqlCommand("SELECT flights.* FROM cities JOIN cities_flights ON (cities.id = cities_flights.city_departure_id) JOIN flights ON (flights.id = cities_flights.flight_id WHERE cities.name = @CityName)", conn);
+
+      SqlParameter CityNameParam = new SqlParameter("@CityName", this.GetName());
+      cmd.Parameters.Add(CityNameParam);
+
+      SqlDataReader rdr = cmd.ExecuteReader();
+
+      List<City> CityFlights = new List<City>{};
+      while (rdr.Read())
+      {
+        int cityId = rdr.GetInt32(0);
+        string cityName = rdr.GetString(1);
+
+        City newCity = new City(cityName, cityId);
+        CityFlights.Add(newCity);
+      }
+      if(rdr != null)
+      {
+        rdr.Close();
+      }
+      if(conn != null)
+      {
+        conn.Close();
+      }
+      return CityFlights;
+    }
   }
 }
